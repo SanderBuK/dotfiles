@@ -1,0 +1,17 @@
+[user]
+	name = SanderBK
+[credential "https://github.com"]
+	helper =
+	helper = !/home/linuxbrew/.linuxbrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/home/linuxbrew/.linuxbrew/bin/gh auth git-credential
+[core]
+	editor = nvim
+[credential "https://gitlab.com"]
+	helper =
+	helper = !/home/linuxbrew/.linuxbrew/Cellar/glab/1.55.0/bin/glab auth git-credential
+[init]
+	defaultBranch = main
+[include]
+	path = ~/.config/git/local

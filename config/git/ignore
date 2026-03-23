@@ -1,0 +1,11 @@
+# SX
+Justfile
+.envrc
+
+# General
+.env.dev
+.vscode/
+
+# Claude Code
+**/.claude/settings.local.json
+

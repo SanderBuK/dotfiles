@@ -1,0 +1,12 @@
+# Never commit secrets
+.zshrc.secrets
+local.zsh
+
+# Neovim generated files
+nvim/.config/nvim/lazy-lock.json
+
+# Tmux plugins (managed by TPM)
+tmux/.config/tmux/plugins/
+
+# OS
+.DS_Store
