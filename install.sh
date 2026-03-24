@@ -109,7 +109,7 @@ stow_packages() {
   stow --no-folding --target="$TARGET_DIR/.config" config
 
   # zshenv: must live at ~/.zshenv (zsh doesn't support XDG for this file)
-  ln -sf "$DOTFILES_DIR/config/zsh/.zshenv" "$TARGET_DIR/.zshenv"
+  ln -sf "dotfiles/config/zsh/.zshenv" "$TARGET_DIR/.zshenv"
 
   # claude: ~/.claude/ settings, hooks, keybindings
   # --no-folding so cache, history, plugins/ etc. can live there untracked

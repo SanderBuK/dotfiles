@@ -62,8 +62,9 @@ bindsym $mod+d exec rofi -show drun
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 # bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
 
-# Apply home monitor layout
-bindsym $mod+F1 exec --no-startup-id ~/.config/i3/home.sh
+# Apply monitor layout
+bindsym $mod+F1 exec --no-startup-id ~/.config/i3/work.sh
+bindsym $mod+F2 exec --no-startup-id ~/.config/i3/home.sh
 
 # Lock screen + shutoff
 bindsym $mod+ae exec i3lock -c 000000

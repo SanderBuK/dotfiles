@@ -63,6 +63,17 @@ SAFE_PREFIXES = [
     "lsof", "netstat", "ss", "ip addr", "ip route",
     "curl --head", "curl -I",
     "nmap",
+    # Azure DevOps CLI (read-only)
+    "az devops project list", "az devops project show",
+    "az repos list", "az repos show", "az repos ref list",
+    "az repos pr list", "az repos pr show", "az repos pr diff",
+    "az repos pr reviewer list", "az repos pr work-item list",
+    "az repos policy list", "az repos policy show",
+    "az pipelines list", "az pipelines show", "az pipelines runs list",
+    "az pipelines runs show", "az pipelines variable list",
+    "az pipelines variable-group list", "az pipelines variable-group show",
+    "az boards work-item show", "az boards query",
+    "az boards iteration project list", "az boards area project list",
 ]
 
 # Per-command validators applied after prefix match.
