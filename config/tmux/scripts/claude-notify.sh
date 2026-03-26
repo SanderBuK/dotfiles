@@ -19,7 +19,7 @@ if [[ -z "${TMUX:-}" ]] || [[ -z "${TMUX_PANE:-}" ]]; then
 fi
 
 SESSION=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}' 2>/dev/null) || { echo "$(date '+%H:%M:%S') $ACTION SKIP session-fail pane=$TMUX_PANE" >> "$LOG"; exit 0; }
-WINDOW=$(tmux display-message -p -t "$TMUX_PANE" '#{window_index}' 2>/dev/null) || { echo "$(date '+%H:%M:%S') $ACTION SKIP window-fail pane=$TMUX_PANE" >> "$LOG"; exit 0; }
+WINDOW=$(tmux display-message -p -t "$TMUX_PANE" '#{window_id}' 2>/dev/null) || { echo "$(date '+%H:%M:%S') $ACTION SKIP window-fail pane=$TMUX_PANE" >> "$LOG"; exit 0; }
 FLAG="/tmp/claude-waiting/${SESSION}_${WINDOW}"
 
 case "$ACTION" in

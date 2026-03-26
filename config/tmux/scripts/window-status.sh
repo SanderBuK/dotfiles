@@ -7,6 +7,7 @@ window="$2"
 name="$3"
 path="$4"
 current="$5"
+window_id="$6"
 
 case "${name,,}" in
   claude)            icon="󰚩" ;;
@@ -21,7 +22,7 @@ case "${name,,}" in
 esac
 
 waiting=0
-[ -f "/tmp/claude-waiting/${session}_${window}" ] && waiting=1
+[ -f "/tmp/claude-waiting/${session}_${window_id}" ] && waiting=1
 
 if [ "$waiting" = "1" ] && [ "${name,,}" = "claude" ]; then
     if [ "$current" = "1" ]; then

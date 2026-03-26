@@ -6,6 +6,14 @@
 
 CURRENT=$(tmux display-message -p '#{session_name}' 2>/dev/null) || exit 0
 
+# Clean up orphan flags for windows that no longer exist
+active_ids=$(tmux list-windows -a -F '#{window_id}' 2>/dev/null)
+for flag in /tmp/claude-waiting/*_@*; do
+    [ -f "$flag" ] || continue
+    wid="${flag##*_}"
+    echo "$active_ids" | grep -qF "$wid" || rm -f "$flag"
+done
+
 output=""
 
 while IFS=: read -r session attached; do
