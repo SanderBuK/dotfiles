@@ -1,9 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Read(**)",
-      "Glob(*)",
-      "Grep(*)",
+      "Read",
+      "WebSearch",
+      "WebFetch",
+      "Glob",
+      "Grep",
       "Bash(bd *)",
       "Bash(git add *)",
       "Bash(git commit *)",

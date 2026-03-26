@@ -9,7 +9,7 @@ import sys
 
 SAFE_PREFIXES = [
     # File listing & navigation
-    "ls", "tree", "pwd", "realpath", "readlink", "stat", "file",
+    "cd", "ls", "tree", "pwd", "realpath", "readlink", "stat", "file",
     # File reading
     "cat", "head", "tail", "less", "more",
     # Search
