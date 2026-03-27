@@ -11,3 +11,5 @@ map("n", "<C-l>", "<cmd>TmuxNavigateRight<CR>", { desc = "window right" })
 map("n", "<C-j>", "<cmd>TmuxNavigateDown<CR>",  { desc = "window down" })
 map("n", "<C-k>", "<cmd>TmuxNavigateUp<CR>",    { desc = "window up" })
 
+-- unbind NvChad's <leader>h (horizontal terminal) — conflicts with gitsigns <leader>h* mappings
+vim.keymap.del("n", "<leader>h")

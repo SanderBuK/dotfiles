@@ -9,3 +9,6 @@ Justfile
 # Claude Code
 **/.claude/settings.local.json
 
+# Neovim sessions (auto-saved for tmux-resurrect)
+Session.vim
+
