@@ -13,3 +13,8 @@ map("n", "<C-k>", "<cmd>TmuxNavigateUp<CR>",    { desc = "window up" })
 
 -- unbind NvChad's <leader>h (horizontal terminal) — conflicts with gitsigns <leader>h* mappings
 vim.keymap.del("n", "<leader>h")
+
+-- Telescope live grep, pre-filled with word under cursor (editable)
+map("n", "<leader>fw", function()
+  require("telescope.builtin").live_grep({ default_text = vim.fn.expand("<cword>") })
+end, { desc = "grep word under cursor" })

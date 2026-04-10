@@ -9,8 +9,9 @@ return {
       end
 
       -- Hunk navigation (Danish keyboard friendly)
-      map('n', 'æ', gs.next_hunk, 'Next hunk')
-      map('n', 'ø', gs.prev_hunk, 'Previous hunk')
+      -- Use nav_hunk instead of next_hunk/prev_hunk to avoid skipping hunks
+      map('n', 'æ', function() gs.nav_hunk('next') end, 'Next hunk')
+      map('n', 'ø', function() gs.nav_hunk('prev') end, 'Previous hunk')
 
       -- Stage & reset
       map('n', '<leader>hs', gs.stage_hunk, 'Stage hunk')
