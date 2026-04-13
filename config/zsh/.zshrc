@@ -9,6 +9,9 @@ alias avenv="source .venv/bin/activate"
 # Secrets live in local.zsh which is NOT tracked in dotfiles
 [[ -f "$ZDOTDIR/local.zsh" ]] && source "$ZDOTDIR/local.zsh"
 
+# ------- Git Worktree Manager -------
+[[ -f "$ZDOTDIR/worktree.zsh" ]] && source "$ZDOTDIR/worktree.zsh"
+
 # ------- Add tools to path -------
 export EDITOR=nvim
 # Homebrew
@@ -48,9 +51,6 @@ setopt SHARE_HISTORY
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_REDUCE_BLANKS
 
-# Zoxide
-eval "$(zoxide init zsh)"
-
 # Scaleway CLI autocomplete initialization.
 command -v scw >/dev/null 2>&1 && eval "$(scw autocomplete script shell=zsh)"
 
@@ -70,4 +70,7 @@ source $ZSH/oh-my-zsh.sh
 eval "$(oh-my-posh init zsh)"
 # Keep empty for oh-my-posh
 ZSH_THEME=""
+
+# Zoxide
+eval "$(zoxide init zsh --cmd cd)"
 

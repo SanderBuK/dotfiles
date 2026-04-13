@@ -83,6 +83,13 @@ install_zoxide() {
   fi
 }
 
+install_fzf() {
+  if ! command -v fzf &>/dev/null; then
+    echo "--> Installing fzf..."
+    brew install fzf
+  fi
+}
+
 install_nvm() {
   if [[ ! -d "$HOME/.nvm" ]]; then
     echo "--> Installing nvm..."
@@ -164,6 +171,7 @@ install_oh_my_posh
 install_nvim
 install_tmux
 install_zoxide
+install_fzf
 install_nvm
 install_arandr
 stow_packages

@@ -12,3 +12,9 @@ Justfile
 # Neovim sessions (auto-saved for tmux-resurrect)
 Session.vim
 
+# Git worktrees
+.worktrees/
+
+# Devcontainers
+.devcontainer/
+
