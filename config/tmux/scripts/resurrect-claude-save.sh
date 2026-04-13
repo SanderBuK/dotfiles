@@ -22,40 +22,29 @@ while IFS= read -r line; do
 	# Only process pane lines where the command is claude
 	# Format: pane\tsession\twindow\t...\tpane_command\t:full_command
 	if [[ "$line" == pane$'\t'* ]] && [[ "$line" =~ $'\t'claude$'\t' ]]; then
-		# Extract the full command (after last \t:)
-		full_cmd="${line##*$'\t:'}"
+		# Extract session_name (field 2), window_number (field 3), pane_index (field 6)
+		session_name=$(echo "$line" | cut -f2)
+		window_number=$(echo "$line" | cut -f3)
+		pane_index=$(echo "$line" | cut -f6)
 
-		# Only upgrade bare "claude" or "claude --continue" (not already --resume/-r)
-		if [[ "$full_cmd" == "claude" || "$full_cmd" == "claude --continue" ]]; then
-			# Extract pane PID: field 1 of the pane line is the pane info,
-			# but we need the tmux pane PID. We can get it from the pane_pid
-			# saved in the file... except resurrect doesn't save pane_pid.
-			# Instead, walk the running tmux panes to find the match.
+		# Get the pane's shell PID from tmux
+		pane_pid=$(tmux list-panes -t "${session_name}:${window_number}" \
+			-F '#{pane_index} #{pane_pid}' 2>/dev/null \
+			| awk -v idx="$pane_index" '$1 == idx {print $2}')
 
-			# Extract session_name (field 2), window_number (field 3), pane_index (field 6)
-			session_name=$(echo "$line" | cut -f2)
-			window_number=$(echo "$line" | cut -f3)
-			pane_index=$(echo "$line" | cut -f6)
+		if [ -n "$pane_pid" ]; then
+			# Find the claude child process
+			claude_pid=$(pgrep -P "$pane_pid" 2>/dev/null | head -1)
 
-			# Get the pane's shell PID from tmux
-			pane_pid=$(tmux list-panes -t "${session_name}:${window_number}" \
-				-F '#{pane_index} #{pane_pid}' 2>/dev/null \
-				| awk -v idx="$pane_index" '$1 == idx {print $2}')
+			if [ -n "$claude_pid" ] && [ -f "${SESSIONS_DIR}/${claude_pid}.json" ]; then
+				# Extract sessionId from the session file (always authoritative)
+				session_id=$(grep -o '"sessionId":"[^"]*"' "${SESSIONS_DIR}/${claude_pid}.json" \
+					| head -1 | cut -d'"' -f4)
 
-			if [ -n "$pane_pid" ]; then
-				# Find the claude child process
-				claude_pid=$(pgrep -P "$pane_pid" 2>/dev/null | head -1)
-
-				if [ -n "$claude_pid" ] && [ -f "${SESSIONS_DIR}/${claude_pid}.json" ]; then
-					# Extract sessionId from the JSON
-					session_id=$(grep -o '"sessionId":"[^"]*"' "${SESSIONS_DIR}/${claude_pid}.json" \
-						| head -1 | cut -d'"' -f4)
-
-					if [ -n "$session_id" ]; then
-						# Replace the full command with claude --resume <id>
-						line="${line%$'\t:'*}"$'\t:'"claude --resume ${session_id}"
-						changed=1
-					fi
+				if [ -n "$session_id" ]; then
+					# Replace the full command with claude --resume <id>
+					line="${line%$'\t:'*}"$'\t:'"claude --resume ${session_id}"
+					changed=1
 				fi
 			fi
 		fi
