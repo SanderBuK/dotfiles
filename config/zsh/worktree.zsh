@@ -87,6 +87,7 @@ wt() {
 
   # Add "new branch" option
   entries+=("__new__	[+ new branch]")
+  entries+=("__existing__	[+ existing branch]")
 
   # Run fzf picker
   local selected
@@ -117,7 +118,7 @@ wt() {
 
   # Handle delete
   if [[ "$key" == "d" ]]; then
-    if [[ "$action_path" == "__new__" ]]; then
+    if [[ "$action_path" == "__new__" || "$action_path" == "__existing__" ]]; then
       return 0
     fi
     _wt_delete "$action_path" "$repo_root"
@@ -127,6 +128,12 @@ wt() {
   # Handle new branch
   if [[ "$action_path" == "__new__" ]]; then
     _wt_create "$repo_root"
+    return $?
+  fi
+
+  # Handle existing branch
+  if [[ "$action_path" == "__existing__" ]]; then
+    _wt_checkout_existing "$repo_root"
     return $?
   fi
 
@@ -155,6 +162,84 @@ _wt_create() {
   else
     git -C "$repo_root" worktree add -b "$branch" "$wt_path" || return 1
     echo "Created new branch: $branch"
+  fi
+
+  cd "$wt_path" || return 1
+}
+
+_wt_checkout_existing() {
+  local repo_root="$1"
+  local wt_dir="$repo_root/.worktrees"
+
+  # Collect branches that already have worktrees
+  local -a wt_branches=()
+  local line
+  while IFS= read -r line; do
+    if [[ "$line" == branch\ * ]]; then
+      wt_branches+=("${line#branch refs/heads/}")
+    fi
+  done < <(git worktree list --porcelain 2>/dev/null)
+
+  # Build deduplicated branch list (local first, then remote-only)
+  local -a branches=()
+  local -A seen=()
+  local ref short
+
+  while IFS= read -r ref; do
+    short="${ref#refs/heads/}"
+    seen[$short]=1
+    branches+=("$short")
+  done < <(git -C "$repo_root" for-each-ref --format='%(refname)' refs/heads/)
+
+  while IFS= read -r ref; do
+    short="${ref#refs/remotes/origin/}"
+    [[ "$short" == "HEAD" ]] && continue
+    [[ -n "${seen[$short]+x}" ]] && continue
+    seen[$short]=1
+    branches+=("$short")
+  done < <(git -C "$repo_root" for-each-ref --format='%(refname)' refs/remotes/origin/)
+
+  # Filter out branches that already have a worktree
+  local -a available=()
+  local b wb skip
+  for b in "${branches[@]}"; do
+    skip=0
+    for wb in "${wt_branches[@]}"; do
+      [[ "$b" == "$wb" ]] && { skip=1; break; }
+    done
+    (( skip )) || available+=("$b")
+  done
+
+  if (( ${#available[@]} == 0 )); then
+    echo "No available branches without worktrees" >&2
+    return 1
+  fi
+
+  # fzf picker with search enabled for fuzzy finding
+  local branch
+  branch=$(
+    printf '%s\n' "${available[@]}" |
+    fzf --ansi \
+        --height=~40% \
+        --layout=reverse \
+        --no-separator \
+        --header="Select branch (type to filter)" \
+        --header-first
+  )
+
+  [[ -z "$branch" ]] && return 0
+
+  # Create worktree for the selected branch
+  mkdir -p "$wt_dir"
+  local dir_name="${branch//\//-}"
+  local wt_path="$wt_dir/$dir_name"
+
+  if git -C "$repo_root" show-ref --verify --quiet "refs/remotes/origin/$branch" 2>/dev/null; then
+    git -C "$repo_root" worktree add "$wt_path" "$branch" || return 1
+    echo "Tracking remote branch: $branch"
+  else
+    git -C "$repo_root" worktree add "$wt_path" "$branch" || return 1
+    echo "Checked out local branch: $branch"
   fi
 
   cd "$wt_path" || return 1
