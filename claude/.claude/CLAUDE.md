@@ -1,23 +1,46 @@
-## Issue Tracking with bd (beads)
+## Git Conventions
 
-If a `.beads/*.db` file exists in the project, use **bd** for all task tracking. If not, ignore this section.
+### Commits
 
-**Check for bd:**
-```bash
-ls .beads/*.db 2>/dev/null && echo "bd available" || echo "no bd"
+Use **semantic commit messages**:
+
+```
+<type>: <short description>
 ```
 
-**Core workflow:**
-```bash
-bd ready --json              # Find unblocked work
-bd show <id>                 # View issue details
-bd update <id> --claim       # Claim work atomically
-bd create "Title" --description="Context" -t task -p 2 --json
-bd close <id> --reason "Done"
+Types: `feat`, `fix`, `refactor`, `chore`, `docs`, `style`, `test`, `perf`, `ci`, `build`
+
+- Subject line imperative, lowercase, no period (e.g. `feat: add battery warning to status bar`)
+- Body optional — use for *why*, not *what*
+- Never add `Co-Authored-By` trailers
+
+### Branches
+
+```
+<type>/<issue-num>-short-description
 ```
 
-**Rules when bd is present:**
-- Use bd for ALL task tracking — no markdown TODOs
-- Always `--json` flag for programmatic use
-- Link discovered work: `--deps discovered-from:<parent-id>`
-- Check `bd ready` before asking what to work on
+Examples: `feature/42-add-worktree-tool`, `fix/17-stow-folding-bug`, `refactor/9-consolidate-zsh-plugins`
+
+Types: `feature`, `fix`, `refactor`, `chore`, `docs`, `test`
+
+### Remote Git (GitLab — adamatics/adalab)
+
+All remote git operations for `adamatics/adalab` repos use **`glab`** (GitLab CLI), not `gh`.
+
+```bash
+# Issues
+glab issue view 971 --repo adamatics/adalab-meta
+glab issue list --repo adamatics/adalab-meta
+
+# Merge requests
+glab mr view 123 --repo adamatics/adalab-meta
+glab mr list --repo adamatics/adalab-meta
+glab mr create --repo adamatics/adalab-meta
+
+# Comments
+glab mr note 123 --repo adamatics/adalab-meta -m "comment"
+```
+
+Always pass `--repo adamatics/<project>` when not inside the repo directory.
+
