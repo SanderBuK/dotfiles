@@ -34,16 +34,15 @@ install_zsh_tools() {
     RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   fi
 
-  # zsh-autosuggestions
-  local custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-  if [[ ! -d "$custom/plugins/zsh-autosuggestions" ]]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions "$custom/plugins/zsh-autosuggestions"
-  fi
+  # External plugins are git submodules — init them
+  echo "--> Initializing zsh plugin submodules..."
+  cd "$DOTFILES_DIR"
+  git submodule update --init --depth 1
+}
 
-  # zsh-syntax-highlighting
-  if [[ ! -d "$custom/plugins/zsh-syntax-highlighting" ]]; then
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting "$custom/plugins/zsh-syntax-highlighting"
-  fi
+install_shell_tools() {
+  echo "--> Installing shell tools..."
+  brew install git fzf zoxide eza bat git-delta ripgrep fd dust btop
 }
 
 install_oh_my_posh() {
@@ -73,20 +72,6 @@ install_tmux() {
   if [[ ! -d "$HOME/.config/tmux/plugins/tpm" ]]; then
     mkdir -p "$HOME/.config/tmux/plugins"
     git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/plugins/tpm"
-  fi
-}
-
-install_zoxide() {
-  if ! command -v zoxide &>/dev/null; then
-    echo "--> Installing zoxide..."
-    curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-  fi
-}
-
-install_fzf() {
-  if ! command -v fzf &>/dev/null; then
-    echo "--> Installing fzf..."
-    brew install fzf
   fi
 }
 
@@ -168,10 +153,9 @@ install_homebrew
 install_stow
 install_zsh_tools
 install_oh_my_posh
+install_shell_tools
 install_nvim
 install_tmux
-install_zoxide
-install_fzf
 install_nvm
 install_arandr
 stow_packages

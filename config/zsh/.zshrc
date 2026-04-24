@@ -2,7 +2,6 @@
 # ------- Common Aliases -------
 alias vim="nvim"
 alias vi="nvim"
-alias top="bashtop"
 alias avenv="source .venv/bin/activate"
 
 # ------- Tokens -------
@@ -11,6 +10,7 @@ alias avenv="source .venv/bin/activate"
 
 # ------- Git Worktree Manager -------
 [[ -f "$ZDOTDIR/worktree.zsh" ]] && source "$ZDOTDIR/worktree.zsh"
+source "$ZDOTDIR/help.zsh"
 
 # ------- Add tools to path -------
 export EDITOR=nvim
@@ -59,17 +59,34 @@ export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME=""
 
 # Which plugins would you like to load?
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker kubectl npm python pip zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git docker kubectl npm python pip)
 
 source $ZSH/oh-my-zsh.sh
 
+# Modern replacements (must be after oh-my-zsh to override its aliases)
+alias ls="eza --icons=always"
+alias ll="eza --icons=always -la"
+alias tree="eza --icons=always --tree"
+alias cat="bat"
+alias top="btop"
+alias du="dust"
+alias find="fd"
+alias grep="rg"
+
+# External plugins (managed as git submodules in dotfiles)
+source "$ZDOTDIR/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
 # Oh-My-Posh
-eval "$(oh-my-posh init zsh)"
-# Keep empty for oh-my-posh
-ZSH_THEME=""
+eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/config.json)"
+
+# Source after oh-my-posh to avoid widget conflicts
+source "$ZDOTDIR/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh"
+source "$ZDOTDIR/plugins/fzf-tab/fzf-tab.plugin.zsh"
+source "$ZDOTDIR/fzf-tab.zsh"
 
 # Zoxide
 eval "$(zoxide init zsh --cmd cd)"

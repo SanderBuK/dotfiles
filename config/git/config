@@ -8,6 +8,26 @@
 	helper = !/home/linuxbrew/.linuxbrew/bin/gh auth git-credential
 [core]
 	editor = nvim
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	dark = true
+	paging = always
+	file-modified-label =
+	file-style = bold "#b4befe"
+	file-decoration-style = "#b4befe" ol
+	line-numbers = true
+	hunk-header-style = syntax
+	hunk-header-decoration-style = none
+	hunk-label = "CONTEXT:"
+[alias]
+	diffs = -c delta.side-by-side=true diff
+[merge]
+	conflictStyle = zdiff3
+[diff]
+	colorMoved = default
 [credential "https://gitlab.com"]
 	helper =
 	helper = !/home/linuxbrew/.linuxbrew/Cellar/glab/1.55.0/bin/glab auth git-credential

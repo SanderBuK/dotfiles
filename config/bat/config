@@ -1,0 +1,4 @@
+# Use plain style when used as cat replacement (no header, no line numbers)
+# Use bat directly for the full experience: bat --style=full file.py
+--theme="Catppuccin Mocha"
+--paging=auto
