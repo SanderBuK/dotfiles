@@ -89,6 +89,21 @@ install_arandr() {
   fi
 }
 
+set_keyboard_layout() {
+  # System-level X keyboard config (writes /etc/default/keyboard).
+  # The X server re-applies this on every keyboard hotplug (suspend/resume,
+  # monitor swap, USB events), so configuring at this layer is the only way
+  # to make it survive. User-space setxkbmap gets clobbered.
+  local layout='eu,dk'
+  local model='pc105'
+  local options='lv3:caps_switch,grp:shifts_toggle'
+  if [[ "$(localectl status 2>/dev/null | awk -F': +' '/X11 Layout/{print $2}')" != "$layout" ]] \
+     || [[ "$(localectl status 2>/dev/null | awk -F': +' '/X11 Options/{print $2}')" != "$options" ]]; then
+    echo "--> Setting system X keyboard: $layout (options: $options)"
+    sudo localectl set-x11-keymap "$layout" "$model" '' "$options"
+  fi
+}
+
 # ── Stow packages ────────────────────────────────────────────────────────────
 
 stow_packages() {
@@ -158,6 +173,7 @@ install_nvim
 install_tmux
 install_nvm
 install_arandr
+set_keyboard_layout
 stow_packages
 setup_local_zsh
 setup_local_gitconfig
