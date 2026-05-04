@@ -5,6 +5,9 @@
 zstyle ':completion:*:descriptions' format '[%d]'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu no
+
+# Show hidden files & directories in all tab completions
+_comp_options+=(globdots)
 zstyle ':fzf-tab:*' switch-group '<' '>'
 zstyle ':fzf-tab:*' fzf-flags \
   --bind=alt-bspace:abort \
