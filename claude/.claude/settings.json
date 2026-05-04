@@ -152,5 +152,7 @@
     }
   },
   "effortLevel": "high",
-  "voiceEnabled": true
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true,
+  "agentPushNotifEnabled": true
 }
