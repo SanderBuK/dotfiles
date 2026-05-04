@@ -164,6 +164,7 @@ _wt_create() {
     echo "Created new branch: $branch"
   fi
 
+  _wt_seed "$repo_root" "$wt_path"
   cd "$wt_path" || return 1
 }
 
@@ -242,6 +243,7 @@ _wt_checkout_existing() {
     echo "Checked out local branch: $branch"
   fi
 
+  _wt_seed "$repo_root" "$wt_path"
   cd "$wt_path" || return 1
 }
 
@@ -280,5 +282,34 @@ _wt_delete() {
     git -C "$repo_root" branch -d "$branch" 2>/dev/null ||
       git -C "$repo_root" branch -D "$branch"
     echo "Deleted branch: $branch"
+  fi
+}
+
+# Copy gitignored env files from source worktree into a freshly created one.
+# Walks the whole tree so monorepo .env files at any depth come along.
+_wt_seed() {
+  local source_dir="$1"
+  local dest_dir="$2"
+
+  local -a copied=()
+  local file dest
+  while IFS= read -r file; do
+    case "${file##*/}" in
+      .env|.env.*|.envrc) ;;
+      *) continue ;;
+    esac
+    [[ -f "$source_dir/$file" ]] || continue
+    dest="$dest_dir/$file"
+    mkdir -p "$(dirname "$dest")"
+    cp "$source_dir/$file" "$dest" && copied+=("$file")
+  done < <(git -C "$source_dir" ls-files --others --ignored --exclude-standard 2>/dev/null)
+
+  if (( ${#copied[@]} > 0 )); then
+    echo "Seeded env files:"
+    printf '  %s\n' "${copied[@]}"
+  fi
+
+  if git -C "$source_dir" ls-files 2>/dev/null | grep -qE '(^|/)package\.json$'; then
+    echo "Reminder: install JS deps in the new worktree (e.g. pnpm install)"
   fi
 }
