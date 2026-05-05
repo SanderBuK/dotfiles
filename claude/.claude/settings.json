@@ -53,13 +53,13 @@
         ]
       }
     ],
-    "PostToolUse": [
+    "Notification": [
       {
-        "matcher": "",
+        "matcher": "idle_prompt|permission_prompt|elicitation_dialog",
         "hooks": [
           {
             "type": "command",
-            "command": "/bin/bash ~/.config/tmux/scripts/claude-notify.sh clear"
+            "command": "/bin/bash ~/.config/tmux/scripts/claude-notify.sh set"
           }
         ]
       }
@@ -71,28 +71,6 @@
           {
             "type": "command",
             "command": "/bin/bash ~/.config/tmux/scripts/claude-notify.sh clear"
-          }
-        ]
-      }
-    ],
-    "PermissionRequest": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/bin/bash ~/.config/tmux/scripts/claude-notify.sh set"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/bin/bash ~/.config/tmux/scripts/claude-notify.sh set"
           }
         ]
       }
