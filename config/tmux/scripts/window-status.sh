@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# window-status.sh — single solid block per window: [icon name]
-# Args: session window_index window_name pane_path is_current(0|1) window_id pane_in_mode(0|1) pane_current_command
+# window-status.sh — single solid block per window: [icon name <markers>]
+# Args: session window_index window_name pane_path is_current(0|1) window_id pane_in_mode(0|1) pane_current_command zoomed(0|1)
 
 session="$1"
 window="$2"
@@ -10,6 +10,7 @@ current="$5"
 window_id="$6"
 in_mode="$7"
 current_command="$8"
+zoomed="$9"
 
 # In copy mode tmux renames the window to "[tmux]" — fall back to the
 # underlying process so you can still tell what's running.
@@ -33,16 +34,27 @@ esac
 waiting=0
 [ -f "/tmp/claude-waiting/${session}_${window_id}" ] && waiting=1
 
+# Pill color — priority: copy mode (current) > zoom > current > inactive
 if [ "$in_mode" = "1" ] && [ "$current" = "1" ]; then
-    printf '#[fg=#1e1e2e,bg=#a6e3a1,bold] %s %s COPY #[default]' "$icon" "$name"
-elif [ "$waiting" = "1" ] && [ "${name,,}" = "claude" ]; then
-    if [ "$current" = "1" ]; then
-        printf '#[fg=colour232,bg=#fab387] %s %s #[fg=red]● #[default]' "$icon" "$name"
-    else
-        printf '#[fg=#1e1e2e,bg=#89b4fa] %s %s #[fg=red]● #[default]' "$icon" "$name"
-    fi
+    fg="#1e1e2e"; bg="#a6e3a1"; bold=",bold"
+elif [ "$zoomed" = "1" ] && [ "$current" = "1" ]; then
+    fg="#1e1e2e"; bg="#cba6f7"; bold=",bold"
 elif [ "$current" = "1" ]; then
-    printf '#[fg=colour232,bg=#fab387] %s %s #[default]' "$icon" "$name"
+    fg="colour232"; bg="#fab387"; bold=""
 else
-    printf '#[fg=#1e1e2e,bg=#89b4fa] %s %s #[default]' "$icon" "$name"
+    fg="#1e1e2e"; bg="#89b4fa"; bold=""
 fi
+
+# Inline marker glyphs (icon-only, no text)
+markers=""
+[ "$in_mode" = "1" ] && [ "$current" = "1" ] && markers="$markers "
+[ "$zoomed" = "1" ] && [ "$current" = "1" ] && markers="$markers "
+
+# Claude-waiting red dot suffix
+suffix=""
+if [ "$waiting" = "1" ] && [ "${name,,}" = "claude" ]; then
+    suffix=" #[fg=red]●"
+fi
+
+printf "#[fg=%s,bg=%s%s] %s %s%s%s #[default]" "$fg" "$bg" "$bold" "$icon" "$name" "$markers" "$suffix"
+
