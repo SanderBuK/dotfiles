@@ -285,8 +285,9 @@ _wt_delete() {
   fi
 }
 
-# Copy gitignored env files from source worktree into a freshly created one.
-# Walks the whole tree so monorepo .env files at any depth come along.
+# Copy env files plus Makefile/Justfile from source worktree into a freshly
+# created one. Walks the whole tree so monorepo files at any depth come along.
+# Includes tracked Makefile/Justfile too, so any local uncommitted edits travel.
 _wt_seed() {
   local source_dir="$1"
   local dest_dir="$2"
@@ -294,18 +295,23 @@ _wt_seed() {
   local -a copied=()
   local file dest
   while IFS= read -r file; do
+    # Skip files inside other worktrees
+    [[ "$file" == .worktrees/* ]] && continue
     case "${file##*/}" in
       .env|.env.*|.envrc) ;;
+      Makefile|makefile|GNUmakefile|Justfile|justfile|.justfile) ;;
       *) continue ;;
     esac
     [[ -f "$source_dir/$file" ]] || continue
     dest="$dest_dir/$file"
     mkdir -p "$(dirname "$dest")"
     cp "$source_dir/$file" "$dest" && copied+=("$file")
-  done < <(git -C "$source_dir" ls-files --others --ignored --exclude-standard 2>/dev/null)
+  done < <({ git -C "$source_dir" ls-files 2>/dev/null; \
+              git -C "$source_dir" ls-files --others 2>/dev/null; \
+            } | sort -u)
 
   if (( ${#copied[@]} > 0 )); then
-    echo "Seeded env files:"
+    echo "Seeded files:"
     printf '  %s\n' "${copied[@]}"
   fi
 
