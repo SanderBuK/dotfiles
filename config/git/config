@@ -25,7 +25,7 @@
 [alias]
 	diffs = -c delta.side-by-side=true diff
 [merge]
-	conflictStyle = zdiff3
+	conflictStyle = diff3
 [diff]
 	colorMoved = default
 [credential "https://gitlab.com"]
