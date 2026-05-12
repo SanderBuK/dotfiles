@@ -190,6 +190,15 @@
         "space": "plugin:toggle",
         "i": "plugin:install"
       }
+    },
+    {
+      "context": "Scroll",
+      "bindings": {
+        "alt+y": "scroll:lineUp",
+        "alt+e": "scroll:lineDown",
+        "alt+u": "scroll:halfPageUp",
+        "alt+d": "scroll:halfPageDown"
+      }
     }
   ]
 }
